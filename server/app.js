@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { CLIENT_URL } = require("./config/env");
 const authRoutes = require("./routes/authRoutes");
+const queueRoutes = require("./routes/queueRoutes");
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/queues", queueRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -29,14 +31,12 @@ app.use((err, req, res, next) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || "Internal Server Error";
 
-  // Mongoose duplicate key
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue)[0];
     message = `${field} already exists`;
     statusCode = 400;
   }
 
-  // Mongoose validation
   if (err.name === "ValidationError") {
     message = Object.values(err.errors)
       .map((e) => e.message)
@@ -44,7 +44,6 @@ app.use((err, req, res, next) => {
     statusCode = 400;
   }
 
-  // JWT errors
   if (err.name === "JsonWebTokenError") {
     message = "Invalid token";
     statusCode = 401;
