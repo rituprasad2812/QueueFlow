@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import {
   LayoutDashboard,
   ListOrdered,
+  Monitor,
   Users,
   BarChart3,
   Settings,
@@ -26,6 +27,11 @@ const navItems = [
     label: "Queues",
     href: "/dashboard/queues",
     icon: ListOrdered,
+  },
+  {
+    label: "Counters",
+    href: "/dashboard/counters",
+    icon: Monitor,
   },
   {
     label: "Staff",
