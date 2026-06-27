@@ -1,24 +1,17 @@
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
+import Hero from "../components/landing/Hero";
+import Features from "../components/landing/Features";
+import HowItWorks from "../components/landing/HowItWorks";
+import Industries from "../components/landing/Industries";
+import Footer from "../components/landing/Footer";
 
 const Landing = () => {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-96">
-        <CardHeader>
-          <CardTitle className="text-center text-primary">
-            QueueFlow 🚀
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <Badge variant="success" className="w-fit mx-auto">
-            System Online
-          </Badge>
-          <Button>Get Started</Button>
-          <Button variant="outline">Learn More</Button>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen">
+      <Hero />
+      <Features />
+      <HowItWorks />
+      <Industries />
+      <Footer />
     </div>
   );
 };
