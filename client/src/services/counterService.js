@@ -20,6 +20,13 @@ const counterService = {
     const response = await api.delete(`/counters/${id}`);
     return response.data;
   },
+
+  assignStaff: async (counterId, staffId) => {
+    const response = await api.put(`/counters/${counterId}/assign`, {
+      staffId,
+    });
+    return response.data;
+  },
 };
 
 export default counterService;

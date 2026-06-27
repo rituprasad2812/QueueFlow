@@ -7,12 +7,14 @@ import { Badge } from "../../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import counterService from "../../services/counterService";
 import queueService from "../../services/queueService";
+import staffService from "../../services/staffService";
 import toast from "react-hot-toast";
-import { Plus, Trash2, Monitor } from "lucide-react";
+import { Plus, Trash2, Monitor, UserCircle } from "lucide-react";
 
 const Counters = () => {
   const [counters, setCounters] = useState([]);
   const [queues, setQueues] = useState([]);
+  const [staffList, setStaffList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
@@ -22,16 +24,17 @@ const Counters = () => {
     queueId: "",
   });
 
-  // Load counters and queues
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [counterData, queueData] = await Promise.all([
+        const [counterData, queueData, staffData] = await Promise.all([
           counterService.getCounters(),
           queueService.getQueues(),
+          staffService.getStaff(),
         ]);
         setCounters(counterData.counters);
         setQueues(queueData.queues);
+        setStaffList(staffData.staff);
       } catch (error) {
         toast.error("Failed to load data");
       } finally {
@@ -62,7 +65,7 @@ const Counters = () => {
       setShowForm(false);
       toast.success("Counter created!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create counter");
+      toast.error(error.response?.data?.message || "Failed to create");
     } finally {
       setFormLoading(false);
     }
@@ -77,6 +80,20 @@ const Counters = () => {
       toast.success("Counter deleted");
     } catch (error) {
       toast.error("Failed to delete");
+    }
+  };
+
+  const handleAssignStaff = async (counterId, staffId) => {
+    try {
+      const data = await counterService.assignStaff(counterId, staffId);
+      setCounters(
+        counters.map((c) => (c._id === counterId ? data.counter : c))
+      );
+      toast.success(
+        staffId ? "Staff assigned!" : "Staff removed from counter"
+      );
+    } catch (error) {
+      toast.error("Failed to assign staff");
     }
   };
 
@@ -95,7 +112,7 @@ const Counters = () => {
         <div>
           <h1 className="text-2xl font-bold">Counter Management</h1>
           <p className="text-muted-foreground">
-            Create counters and assign them to queues
+            Create counters and assign staff
           </p>
         </div>
         <Button onClick={() => setShowForm(!showForm)}>
@@ -118,12 +135,11 @@ const Counters = () => {
                   <Input
                     id="name"
                     name="name"
-                    placeholder="e.g. Counter 1, Dr. Smith Room"
+                    placeholder="e.g. Counter 1"
                     value={formData.name}
                     onChange={handleChange}
                   />
                 </div>
-
                 <div className="space-y-2">
                   <Label htmlFor="queueId">Assign to Queue *</Label>
                   <Select
@@ -134,14 +150,11 @@ const Counters = () => {
                   >
                     <option value="">Select Queue</option>
                     {queues.map((q) => (
-                      <option key={q._id} value={q._id}>
-                        {q.name}
-                      </option>
+                      <option key={q._id} value={q._id}>{q.name}</option>
                     ))}
                   </Select>
                 </div>
               </div>
-
               <div className="flex gap-2">
                 <Button type="submit" disabled={formLoading}>
                   {formLoading ? "Creating..." : "Create Counter"}
@@ -166,7 +179,7 @@ const Counters = () => {
             <div className="text-4xl mb-4">🖥️</div>
             <h3 className="text-lg font-semibold">No counters yet</h3>
             <p className="text-muted-foreground mt-1">
-              Create counters to start serving customers
+              Create counters to start serving
             </p>
             <Button className="mt-4" onClick={() => setShowForm(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -193,12 +206,35 @@ const Counters = () => {
                       </p>
                     </div>
                   </div>
-                  <Badge variant={counter.status === "active" ? "success" : "secondary"}>
+                  <Badge
+                    variant={counter.status === "active" ? "success" : "secondary"}
+                  >
                     {counter.status}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-3">
+                {/* Assign Staff */}
+                <div className="space-y-2">
+                  <Label className="text-xs flex items-center gap-1">
+                    <UserCircle className="w-3 h-3" />
+                    Assigned Staff
+                  </Label>
+                  <Select
+                    value={counter.staffId?._id || counter.staffId || ""}
+                    onChange={(e) =>
+                      handleAssignStaff(counter._id, e.target.value || null)
+                    }
+                  >
+                    <option value="">No Staff Assigned</option>
+                    {staffList.map((s) => (
+                      <option key={s._id} value={s._id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-muted-foreground">
                     Served today: {counter.totalServedToday}

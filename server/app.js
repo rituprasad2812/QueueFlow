@@ -6,6 +6,8 @@ const queueRoutes = require("./routes/queueRoutes");
 const businessRoutes = require("./routes/businessRoutes");
 const counterRoutes = require("./routes/counterRoutes");
 const tokenRoutes = require("./routes/tokenRoutes");
+const staffRoutes = require("./routes/staffRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 
 const app = express();
 
@@ -23,6 +25,8 @@ app.use("/api/queues", queueRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/counters", counterRoutes);
 app.use("/api/tokens", tokenRoutes);
+app.use("/api/staff", staffRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

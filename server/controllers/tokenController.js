@@ -3,6 +3,7 @@ const Queue = require("../models/Queue");
 const Counter = require("../models/Counter");
 const generateTokenNumber = require("../utils/tokenNumber");
 const { emitToQueue, emitToToken } = require("../socket/socketManager");
+const { startNoShowTimer, clearNoShowTimer } = require("../services/noShowService");
 
 // @desc    Customer joins queue
 const joinQueue = async (req, res, next) => {
@@ -231,7 +232,10 @@ const callToken = async (req, res, next) => {
 
     await recalculatePositions(token.queueId);
 
-    // BROADCAST: token called
+    // START NO-SHOW TIMER
+    startNoShowTimer(token._id.toString(), token.queueId.toString(), noShowMinutes);
+
+    // BROADCAST
     emitToQueue(token.queueId.toString(), "token:called", {
       tokenId: token._id,
       tokenNumber: token.tokenNumber,
@@ -275,12 +279,14 @@ const serveToken = async (req, res, next) => {
       });
     }
 
+    // CLEAR NO-SHOW TIMER (customer showed up!)
+    clearNoShowTimer(token._id.toString());
+
     token.status = "serving";
     token.servingStartedAt = new Date();
     token.noShowTimerExpiry = null;
     await token.save();
 
-    // BROADCAST
     emitToQueue(token.queueId.toString(), "token:serving", {
       tokenId: token._id,
       tokenNumber: token.tokenNumber,

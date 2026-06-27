@@ -40,7 +40,10 @@ const getCounters = async (req, res, next) => {
   try {
     const counters = await Counter.find({
       businessId: req.user.businessId,
-    }).populate("queueId", "name").sort({ createdAt: 1 });
+    })
+      .populate("queueId", "name")
+      .populate("staffId", "name email")
+      .sort({ createdAt: 1 });
 
     res.status(200).json({
       success: true,
@@ -106,9 +109,47 @@ const deleteCounter = async (req, res, next) => {
   }
 };
 
+// @desc    Assign staff to counter
+// @route   PUT /api/counters/:id/assign
+// @access  Private (Admin)
+const assignStaff = async (req, res, next) => {
+  try {
+    const { staffId } = req.body;
+
+    const counter = await Counter.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        businessId: req.user.businessId,
+      },
+      { staffId: staffId || null },
+      { new: true }
+    )
+      .populate("queueId", "name")
+      .populate("staffId", "name email");
+
+    if (!counter) {
+      return res.status(404).json({
+        success: false,
+        message: "Counter not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: staffId
+        ? "Staff assigned to counter"
+        : "Staff removed from counter",
+      counter,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createCounter,
   getCounters,
   updateCounter,
   deleteCounter,
+  assignStaff,
 };
