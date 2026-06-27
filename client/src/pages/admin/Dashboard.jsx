@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Sidebar from "../../components/shared/Sidebar";
 import DashboardHome from "./DashboardHome";
 import QueueSetup from "./QueueSetup";
+import QueueLive from "./QueueLive";
 import Counters from "./Counters";
 import Settings from "./Settings";
 
@@ -13,13 +14,13 @@ const Dashboard = () => {
         <Routes>
           <Route index element={<DashboardHome />} />
           <Route path="queues" element={<QueueSetup />} />
+          <Route path="queues/:queueId/live" element={<QueueLive />} />
           <Route path="counters" element={<Counters />} />
           <Route path="staff" element={
             <div className="p-8">
               <h1 className="text-2xl font-bold">Staff Management</h1>
               <p className="text-muted-foreground mt-2">
                 Staff invite system coming in Day 5.
-                Create counters first, then assign staff.
               </p>
               <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-700">

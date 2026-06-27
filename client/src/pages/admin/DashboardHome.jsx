@@ -1,7 +1,63 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import queueService from "../../services/queueService";
+import tokenService from "../../services/tokenService";
+import toast from "react-hot-toast";
 
 const DashboardHome = () => {
   const { user } = useAuth();
+  const [stats, setStats] = useState({
+    totalWaiting: 0,
+    totalServed: 0,
+    totalNoShow: 0,
+    totalQueues: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const queueData = await queueService.getQueues();
+        const queues = queueData.queues;
+
+        let totalWaiting = 0;
+        let totalServed = 0;
+        let totalNoShow = 0;
+
+        for (const queue of queues) {
+          try {
+            const tokenData = await tokenService.getQueueTokens(queue._id);
+            totalWaiting += tokenData.summary.waiting;
+            totalServed += tokenData.summary.completed;
+            totalNoShow += tokenData.summary.noShow;
+          } catch (err) {
+            // Queue might have no tokens yet
+          }
+        }
+
+        setStats({
+          totalWaiting,
+          totalServed,
+          totalNoShow,
+          totalQueues: queues.length,
+        });
+      } catch (error) {
+        toast.error("Failed to load stats");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
@@ -19,25 +75,25 @@ const DashboardHome = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           title="Total in Queue"
-          value="0"
+          value={stats.totalWaiting}
           description="Right now"
           color="blue"
         />
         <StatCard
           title="Served Today"
-          value="0"
+          value={stats.totalServed}
           description="Completed"
           color="green"
         />
         <StatCard
-          title="Avg Wait Time"
-          value="0 min"
-          description="Today's average"
+          title="Active Queues"
+          value={stats.totalQueues}
+          description="Running"
           color="purple"
         />
         <StatCard
           title="No Shows"
-          value="0"
+          value={stats.totalNoShow}
           description="Today"
           color="red"
         />
@@ -48,16 +104,16 @@ const DashboardHome = () => {
         <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <QuickAction
-            title="Create Queue"
-            description="Set up a new queue for your business"
+            title="Manage Queues"
+            description="Open live view to manage customers"
             href="/dashboard/queues"
-            emoji="➕"
+            emoji="📋"
           />
           <QuickAction
-            title="Add Staff"
-            description="Invite staff members to manage counters"
-            href="/dashboard/staff"
-            emoji="👥"
+            title="Add Counters"
+            description="Set up service counters"
+            href="/dashboard/counters"
+            emoji="🖥️"
           />
           <QuickAction
             title="View Analytics"
@@ -71,32 +127,28 @@ const DashboardHome = () => {
   );
 };
 
-// Stat Card Component
 const StatCard = ({ title, value, description, color }) => {
   const colors = {
-    blue:   "bg-blue-50 text-blue-600",
-    green:  "bg-green-50 text-green-600",
-    purple: "bg-purple-50 text-purple-600",
-    red:    "bg-red-50 text-red-600",
+    blue: "text-blue-600",
+    green: "text-green-600",
+    purple: "text-purple-600",
+    red: "text-red-600",
   };
 
   return (
     <div className="bg-white rounded-xl border p-6">
       <p className="text-sm font-medium text-muted-foreground">{title}</p>
-      <p className={`text-3xl font-bold mt-2 ${colors[color].split(" ")[1]}`}>
-        {value}
-      </p>
+      <p className={`text-3xl font-bold mt-2 ${colors[color]}`}>{value}</p>
       <p className="text-xs text-muted-foreground mt-1">{description}</p>
     </div>
   );
 };
 
-// Quick Action Component
 const QuickAction = ({ title, description, href, emoji }) => {
   return (
     <a
       href={href}
-      className="flex items-start gap-3 p-4 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer"
+      className="flex items-start gap-3 p-4 rounded-lg border hover:bg-muted/50 transition-colors"
     >
       <span className="text-2xl">{emoji}</span>
       <div>

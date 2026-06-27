@@ -287,16 +287,24 @@ const QueueSetup = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2">
+                {/* Actions */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Live View Button */}
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    onClick={() => window.location.href = `/dashboard/queues/${queue._id}/live`}
+                  >
+                    🔴 Live View
+                  </Button>
+
                   {/* Status Buttons */}
                   {queue.status !== "active" && (
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 text-green-600 hover:text-green-700"
-                      onClick={() =>
-                        handleStatusChange(queue._id, "active")
-                      }
+                      className="text-green-600 hover:text-green-700"
+                      onClick={() => handleStatusChange(queue._id, "active")}
                     >
                       <Play className="w-3 h-3 mr-1" />
                       Open
@@ -307,10 +315,8 @@ const QueueSetup = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 text-yellow-600 hover:text-yellow-700"
-                      onClick={() =>
-                        handleStatusChange(queue._id, "paused")
-                      }
+                      className="text-yellow-600 hover:text-yellow-700"
+                      onClick={() => handleStatusChange(queue._id, "paused")}
                     >
                       <Pause className="w-3 h-3 mr-1" />
                       Pause
@@ -321,10 +327,8 @@ const QueueSetup = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 text-red-600 hover:text-red-700"
-                      onClick={() =>
-                        handleStatusChange(queue._id, "closed")
-                      }
+                      className="text-red-600 hover:text-red-700"
+                      onClick={() => handleStatusChange(queue._id, "closed")}
                     >
                       <XCircle className="w-3 h-3 mr-1" />
                       Close

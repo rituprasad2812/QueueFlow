@@ -3,6 +3,9 @@ const cors = require("cors");
 const { CLIENT_URL } = require("./config/env");
 const authRoutes = require("./routes/authRoutes");
 const queueRoutes = require("./routes/queueRoutes");
+const businessRoutes = require("./routes/businessRoutes");
+const counterRoutes = require("./routes/counterRoutes");
+const tokenRoutes = require("./routes/tokenRoutes");
 
 const app = express();
 
@@ -17,6 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/queues", queueRoutes);
+app.use("/api/business", businessRoutes);
+app.use("/api/counters", counterRoutes);
+app.use("/api/tokens", tokenRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
