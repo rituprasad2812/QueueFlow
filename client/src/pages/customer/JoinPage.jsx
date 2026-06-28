@@ -33,9 +33,8 @@ const JoinPage = () => {
   useEffect(() => {
     const fetchQueue = async () => {
       try {
-        const data = await fetch(
-          `http://localhost:5000/api/queues/${queueId}/public`
-        );
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        const data = await fetch(`${API_URL}/queues/${queueId}/public`);
         const result = await data.json();
 
         if (result.success) {

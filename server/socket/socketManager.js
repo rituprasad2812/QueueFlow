@@ -4,11 +4,14 @@ let io;
 
 const initializeSocket = (server) => {
   io = new Server(server, {
-    cors: {
-      origin: "http://localhost:5173",
-      methods: ["GET", "POST"],
-    },
-  });
+  cors: {
+    origin: [
+      "http://localhost:5173",
+      process.env.CLIENT_URL,
+    ],
+    methods: ["GET", "POST"],
+  },
+});
 
   io.on("connection", (socket) => {
     console.log(`✅ Client connected: ${socket.id}`);
