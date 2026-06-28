@@ -1,16 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "./context/AuthContext";
-import { AdminRoute, StaffRoute, GuestRoute } from "./components/shared/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { AdminRoute, StaffRoute, GuestRoute } from "./components/shared/ProtectedRoute.jsx";
 
-// Pages
-import Landing from "./pages/Landing";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import Dashboard from "./pages/admin/Dashboard";
-import StaffDashboard from "./pages/staff/StaffDashboard";
-import JoinPage from "./pages/customer/JoinPage";
-import TrackPage from "./pages/customer/TrackPage";
+import Landing from "./pages/Landing.jsx";
+import Login from "./pages/auth/Login.jsx";
+import Register from "./pages/auth/Register.jsx";
+import Dashboard from "./pages/admin/Dashboard.jsx";
+import StaffDashboard from "./pages/staff/StaffDashboard.jsx";
+import JoinPage from "./pages/customer/JoinPage.jsx";
+import TrackPage from "./pages/customer/TrackPage.jsx";
 
 function App() {
   return (
