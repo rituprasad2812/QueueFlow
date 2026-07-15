@@ -28,7 +28,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-sm text-gray-500">
-            © 2024 QueueFlow. Built with ❤️
+            © 2026 QueueFlow. Built with ❤️
           </p>
         </div>
 
